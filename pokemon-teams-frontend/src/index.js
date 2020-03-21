@@ -49,8 +49,9 @@ function createCard(trainer) {
             let releaseBtn = document.createElement('button')
             releaseBtn.classList.add("release")
             releaseBtn.innerHTML = "Release"
-            releaseBtn.id = `release-${element["id"]}`
+            releaseBtn.id = `${element["id"]}`
             releaseBtn.addEventListener('click', (e) => {
+                e.target.parentNode.remove()
                 relasePokemon(e.target.id)
             })
             // list pokemon
@@ -74,14 +75,7 @@ function createCard(trainer) {
            teamSize = json['data']['attributes']['pokemon'].length
            if (teamSize < 6) {
                let configObject = {
-                   method: "PATCH",
-                //    headers: {
-                //     "Content-Type": "application/json",
-                //     "Accept": "application/json"
-                //    },
-                //    body: JSON.stringify({
-                //        '[data][trainer_id]': `${trainerId}`
-                //    })
+                   method: "PATCH"
                }
                 fetch(POKEMONS_URL + `/${Math.floor(Math.random() * TOTAL_POKEMONS) + 1}?trainer_id=${trainerId}`, configObject)
                 .then(function(response) {
@@ -112,8 +106,9 @@ function createCard(trainer) {
             let releaseBtn = document.createElement('button')
             releaseBtn.classList.add("release")
             releaseBtn.innerHTML = "Release"
-            releaseBtn.id = `release-${pokemonData["id"]}`
+            releaseBtn.id = `${pokemonData["id"]}`
             releaseBtn.addEventListener('click', (e) => {
+                e.target.parentNode.remove()
                 relasePokemon(e.target.id)
             })
             newPokemon.appendChild(releaseBtn)
@@ -121,6 +116,26 @@ function createCard(trainer) {
         }
 
     function relasePokemon(pokemonId) {
-        console.log(pokemonId)
+        fetch(TRAINERS_URL)
+        .then(function(response) {
+            return response.json()
+        })
+        .then(function(json) {
+            let numberOfTrainers = json["data"].length
+        console.log(numberOfTrainers)
+
+        let configObj = {
+            method: 'PATCH'
+        }
+        fetch(POKEMONS_URL + `/${pokemonId}?trainer_id=${Math.floor(Math.random() * numberOfTrainers) + 1}`, configObj)
+        .then(function(response) {
+            console.log(json)
+            return response.json()
+        })
+        .catch(function(err) {
+            console.log(err)
+        })
+    })
+
     };
 })
