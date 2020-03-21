@@ -84,7 +84,6 @@ function createCard(trainer) {
                 .then(function(json) {
                     let pokemonData = json["data"]
                     let pokemonToRemove = document.querySelector(`#${pokemonData['attributes']['species']}`)
-                    // console.log(pokemonToRemove)
                     pokemonToRemove.remove()
                     updateTeam(pokemonData, trainerId)
                 })
@@ -129,7 +128,6 @@ function createCard(trainer) {
         }
         fetch(POKEMONS_URL + `/${pokemonId}?trainer_id=${Math.floor(Math.random() * numberOfTrainers) + 1}`, configObj)
         .then(function(response) {
-            console.log(json)
             return response.json()
         })
         .catch(function(err) {

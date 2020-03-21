@@ -11,7 +11,6 @@ class PokemonsController < ApplicationController
     end
 
     def update 
-        # byebug
         pokemon = Pokemon.find_by(id: params[:id])
         pokemon.update(pokemon_params)
         render json: PokemonSerializer.new(pokemon)
