@@ -30,6 +30,7 @@ function createCard(trainer) {
     let trainerName = document.createElement('p')
     let teamUl = document.createElement('ul')
     newDiv.classList.add('card')
+    newDiv.id = `trainer-${trainer.id}`
 
     // trainer name
         trainerName.innerHTML = `${trainer['attributes']['name']}`
@@ -48,16 +49,17 @@ function createCard(trainer) {
             let releaseBtn = document.createElement('button')
             releaseBtn.classList.add("release")
             releaseBtn.innerHTML = "Release"
-            releaseBtn.id = element["id"]
+            releaseBtn.id = `release-${element["id"]}`
             releaseBtn.addEventListener('click', (e) => {
                 relasePokemon(e.target.id)
             })
             // list pokemon
-            let teamLi = document.createElement('li')
-            teamLi.innerHTML = element['species']
+            let pokemonLi = document.createElement('li')
+            pokemonLi.id = element['species']
+            pokemonLi.innerHTML = element['species']
 
-            teamUl.appendChild(teamLi)
-            teamLi.appendChild(releaseBtn)
+            teamUl.appendChild(pokemonLi)
+            pokemonLi.appendChild(releaseBtn)
     })
     newDiv.appendChild(teamUl)
     main.appendChild(newDiv)
@@ -71,19 +73,54 @@ function createCard(trainer) {
         .then(function(json) { 
            teamSize = json['data']['attributes']['pokemon'].length
            if (teamSize < 6) {
-                fetch(POKEMONS_URL + `/${Math.floor(Math.random() * TOTAL_POKEMONS) + 1}`)
+               let configObject = {
+                   method: "PATCH",
+                //    headers: {
+                //     "Content-Type": "application/json",
+                //     "Accept": "application/json"
+                //    },
+                //    body: JSON.stringify({
+                //        '[data][trainer_id]': `${trainerId}`
+                //    })
+               }
+                fetch(POKEMONS_URL + `/${Math.floor(Math.random() * TOTAL_POKEMONS) + 1}?trainer_id=${trainerId}`, configObject)
                 .then(function(response) {
                     return response.json();
                 })
                 .then(function(json) {
-                    console.log(json['data']['id'])
+                    let pokemonData = json["data"]
+                    let pokemonToRemove = document.querySelector(`#${pokemonData['attributes']['species']}`)
+                    // console.log(pokemonToRemove)
+                    pokemonToRemove.remove()
+                    updateTeam(pokemonData, trainerId)
                 })
         }
         })
         };       
         
+        function updateTeam(pokemonData, trainerId) {
+            console.log(pokemonData, trainerId)
+            // add poke to list
+            let teamDiv = document.getElementById(`trainer-${trainerId}`)
+            let teamList = teamDiv.querySelector('ul')
+            let newPokemon = document.createElement('li')
+            newPokemon.id = `${pokemonData['attributes']['species']}`
 
-    // function relasePokemon(pokemonId) {
-    //     console.log(pokemonId)
-    // };
+            newPokemon.innerHTML = `${pokemonData['attributes']['species']}`
+            teamList.appendChild(newPokemon)
+            // release button
+            let releaseBtn = document.createElement('button')
+            releaseBtn.classList.add("release")
+            releaseBtn.innerHTML = "Release"
+            releaseBtn.id = `release-${pokemonData["id"]}`
+            releaseBtn.addEventListener('click', (e) => {
+                relasePokemon(e.target.id)
+            })
+            newPokemon.appendChild(releaseBtn)
+            
+        }
+
+    function relasePokemon(pokemonId) {
+        console.log(pokemonId)
+    };
 })
